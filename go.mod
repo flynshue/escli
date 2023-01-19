@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/elastic/go-elasticsearch/v7 v7.17.0
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect

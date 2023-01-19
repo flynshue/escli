@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 
 	"github.com/spf13/cobra"
 )
@@ -31,9 +32,32 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("health called")
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return health()
 	},
+}
+
+// Leaving this for now, in case I change my mind and go back to using json.Unmarshal.
+type healthResponse struct {
+	ClusterName         string `json:"cluster_name"`
+	Status              string `json:"string"`
+	Nodes               int    `json:"number_of_nodes"`
+	DataNodes           int    `json:"number_of_data_nodes"`
+	ActivePrimaryShards int    `json:"active_primary_shards"`
+}
+
+func health() error {
+	cluster := esAPI().Cluster
+	resp, err := cluster.Health(esAPI().Cluster.Health.WithPretty())
+	if err != nil {
+		return err
+	}
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(b))
+	return nil
 }
 
 func init() {
